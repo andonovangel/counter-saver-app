@@ -1,0 +1,22 @@
+<div class="wrapper">
+  <mat-form-field [formGroup]="formGroup">
+    <mat-label>{{ usernameFormControlLabel }}</mat-label>
+    <input matInput [formControlName]="usernameFormControlName" />
+  </mat-form-field>
+
+  <mat-form-field [formGroup]="formGroup">
+    <mat-label>{{ passwordFormControlLabel }}</mat-label>
+    <input matInput [formControlName]="passwordFormControlName" [type]="hide() ? 'password' : 'text'" />
+    <button
+      mat-icon-button
+      matSuffix
+      (click)="clickEvent($event)"
+      [attr.aria-label]="'Hide password'"
+      [attr.aria-pressed]="hide()"
+    >
+      <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <button (click)="onSubmit()">Submit</button>
+</div>
