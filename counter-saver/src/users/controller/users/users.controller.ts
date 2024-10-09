@@ -41,7 +41,7 @@ export class UsersController {
     await this.userService.deleteUser(id);
   }
 
-  @Post(':id/counts')
+  @Post(':id/counters')
   createUserCounter(
     @Param('id', ParseIntPipe) id: number,
     @Body() createUserCounterDto: CreateUserCounterDto,

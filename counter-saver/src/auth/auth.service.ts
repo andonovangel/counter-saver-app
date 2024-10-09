@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/user.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -27,7 +27,7 @@ export class AuthService {
         },
         {
           secret: 'at-secret',
-          expiresIn: 60 * 15,
+          expiresIn: 30,
         },
       ),
       this.jwtService.signAsync(
@@ -98,7 +98,6 @@ export class AuthService {
     if (!user || !user.refresh_token)
       throw new ForbiddenException('Access Denied');
 
-    Logger.log(user.refresh_token);
     const rtMatches = await bcrypt.compare(refresh_token, user.refresh_token);
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 

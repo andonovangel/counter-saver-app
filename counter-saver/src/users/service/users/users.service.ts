@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Count } from 'src/typeorm/entities/counts.entity';
+import { Counter } from 'src/typeorm/entities/counter.entity';
 import { User } from 'src/typeorm/entities/user.entity';
 import {
-  CreateUserCounterParams,
+  CreateCounterParams,
   CreateUserParams,
   UpdateUserParams,
 } from 'src/utils/type';
@@ -13,11 +13,11 @@ import { Repository } from 'typeorm';
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Count) private counterRepository: Repository<Count>,
+    @InjectRepository(Counter) private counterRepository: Repository<Counter>,
   ) {}
 
   findUsers() {
-    return this.userRepository.find({ relations: ['counts'] });
+    return this.userRepository.find({ relations: ['counters'] });
   }
 
   createUser(userDetails: CreateUserParams) {
@@ -39,7 +39,7 @@ export class UsersService {
 
   async createUserCounter(
     id: number,
-    userCounterDetails: CreateUserCounterParams,
+    userCounterDetails: CreateCounterParams,
   ) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {

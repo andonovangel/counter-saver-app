@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './typeorm/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { Count } from './typeorm/entities/counts.entity';
+import { Counter } from './typeorm/entities/counter.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './common/guards';
+import { CountersModule } from './counters/counters.module';
 
 @Module({
   imports: [
@@ -18,11 +19,12 @@ import { AccessTokenGuard } from './common/guards';
       username: 'postgres',
       password: '2001Angel!',
       database: 'counter_saver_db',
-      entities: [User, Count],
+      entities: [User, Counter],
       synchronize: true,
     }),
     AuthModule,
     UsersModule,
+    CountersModule,
   ],
   controllers: [AppController],
   providers: [

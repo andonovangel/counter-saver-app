@@ -44,7 +44,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   refreshTokens(
     @GetCurrentUser('sub') userId: number,
-    @GetCurrentUser('refreshToken') refresh_token: string,
+    @GetCurrentUser('refreshToken') refresh_token?: string,
   ): Promise<Tokens> {
     return this.authService.refreshTokens(userId, refresh_token);
   }

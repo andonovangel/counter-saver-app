@@ -1,26 +1,33 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Count } from "./counts.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Counter } from './counter.entity';
 
 @Entity({ name: 'users' })
 export class User {
-    @PrimaryGeneratedColumn({ type: 'bigint' })
-    id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: number;
 
-    @Column({ unique: true })
-    username: string;
+  @Column({ unique: true })
+  username: string;
 
-    @Column()
-    password: string;
+  @Column()
+  password: string;
 
-    @CreateDateColumn({ type: 'timestamp' })
-    createdAt: Date;
-  
-    @UpdateDateColumn({ type: 'timestamp' })
-    updatedAt: Date;
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 
-    @Column({ type: 'text', nullable: true })
-    refresh_token: string | null
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 
-    @OneToMany(() => Count, (count) => count.user)
-    counts: Count[];
+  @Column({ type: 'text', nullable: true })
+  refresh_token: string | null;
+
+  @OneToMany(() => Counter, (counter) => counter.user)
+  counters: Counter[];
 }

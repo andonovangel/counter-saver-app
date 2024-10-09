@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
-@Entity({ name: 'counts' })
-export class Count {
+@Entity({ name: 'counters' })
+export class Counter {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -12,6 +12,6 @@ export class Count {
     @Column()
     createdAt: Date;
 
-    @ManyToOne(() => User, (user) => user.counts)
+    @ManyToOne(() => User, (user) => user.counters)
     user: User;
 }
