@@ -3,6 +3,7 @@ import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
 import { CounterComponent } from './counter/counter.component';
 import { authGuard } from './auth/auth.guard';
+import { AppComponent } from './app.component';
 
 export const routes: Routes = [
   {
@@ -16,6 +17,17 @@ export const routes: Routes = [
   {
     path: 'counter',
     component: CounterComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'app',
+    component: AppComponent,
+    canActivate: [authGuard],
+  },
+  { path: '', redirectTo: 'counter', pathMatch: 'full' },
+  {
+    path: '**',
+    component: AppComponent,
     canActivate: [authGuard],
   }
 ];

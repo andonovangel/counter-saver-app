@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { IUser } from '../user/user';
+import { ITokens } from './tokens';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +27,6 @@ export class AuthService {
   }
 
   public clearTokens(): void {
-    console.log('clear tokens');
     this.cookieService.delete('access_token');
     this.cookieService.delete('refresh_token');
   }
@@ -49,7 +49,9 @@ export class AuthService {
     return this.http.post<void>(`${this.apiUrl}/logout`, {});
   }
 
-  public refreshTokens(refresh_token: string): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/refresh`, { refresh_token });
+  public refreshTokens(): Observable<ITokens> {
+    const refresh_token = this.getRefreshToken();
+    const headers = new HttpHeaders({'Authorization': `Bearer ${refresh_token}`});
+    return this.http.post<ITokens>(`${this.apiUrl}/refresh`, {}, { headers });
   }
 }

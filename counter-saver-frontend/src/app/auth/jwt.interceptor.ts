@@ -1,43 +1,50 @@
-import { HttpClient, HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { inject } from '@angular/core';
-import { catchError, Observable, switchMap, throwError } from 'rxjs';
-import { CookieService } from 'ngx-cookie-service';
+import { catchError, switchMap, throwError } from 'rxjs';
+import { ITokens } from './tokens';
+import { environment } from '../../environments/environment';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
-  const accessToken = inject(AuthService).getAccessToken();
-  const newReq = req.clone({
-    setHeaders: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  const auth = inject(AuthService);
 
-  return next(newReq).pipe(
-    catchError((error: any) => {
-      if (error.status === 401) {
-        return refreshAccessToken().pipe(
-          switchMap((newAccessToken) => {
-            const cookieService = inject(CookieService);
-            cookieService.set('access_token', newAccessToken, {});
+  if (req.url.includes(environment.refreshTokenEndpoint)) {
+    return next(req);
+  }
 
-            const retryRequest = newReq.clone({
-              setHeaders: {
-                Authorization: `Bearer ${newAccessToken}`,
-              },
-            });
-            return next(retryRequest);
+  let accessToken = auth.getAccessToken();
+  if (accessToken) {
+    req = addToken(req, accessToken);
+  }
+
+  return next(req).pipe(
+    catchError((error) => {
+      if (error.status === 401 && accessToken) {
+        return auth.refreshTokens().pipe(
+          switchMap((newTokens: ITokens) => {
+            auth.setTokens(newTokens.access_token, newTokens.refresh_token);
+            const newAccessToken = auth.getAccessToken();
+            if (newAccessToken) {
+              req = addToken(req, newAccessToken);
+            }
+
+            return next(req);
+          }),
+          catchError((refreshError) => {
+            return throwError(() => refreshError);
           })
         );
       }
-      return throwError(error);
+
+      return throwError(() => error);
     })
   );
 };
 
-export function refreshAccessToken(): Observable<string> {
-  const cookieService = inject(CookieService);
-  const auth = inject(AuthService);
-  const refreshToken = cookieService.get('refresh_token');
-
-  return auth.refreshTokens(refreshToken);
+function addToken(request: HttpRequest<unknown>, token: string | null) {
+  return request.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }

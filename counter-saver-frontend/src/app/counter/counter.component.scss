@@ -1,0 +1,112 @@
+:host {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+
+  background: rgb(49, 138, 153);
+  background: linear-gradient(
+    25deg,
+    rgba(49, 138, 153, 1) 0%,
+    rgba(154, 66, 128, 1) 15%,
+    rgba(28, 8, 18, 1) 95%
+  );
+
+  .clicker {
+    background: #9a4280;
+    border-radius: 12px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+
+    span {
+      display: block;
+      padding: 40px 120px;
+      border-radius: 12px;
+      font-size: 40px;
+      font-weight: 600;
+      background: #803d6b;
+      color: white;
+      transform: translateY(-10px);
+    }
+
+    &:active span {
+      transform: translateY(-2px);
+    }
+  }
+
+  .clicks {
+    color: white;
+    font-size: 200px;
+    font-weight: 600;
+  }
+
+  .logout-btn {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #ff4b5c;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease,
+      transform 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background: rgb(255, 75, 92);
+      background: linear-gradient(
+        135deg,
+        rgba(255, 75, 92, 1) 0%,
+        rgba(255, 58, 77, 1) 60%
+      );
+      box-shadow: 0 8px 20px rgba(255, 75, 92, 0.5);
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  .refresh {
+    position: absolute;
+    top: 80px;
+    right: 80px;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #ff4b5c;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease,
+      transform 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background: rgb(255, 75, 92);
+      background: linear-gradient(
+        135deg,
+        rgba(255, 75, 92, 1) 0%,
+        rgba(255, 58, 77, 1) 60%
+      );
+      box-shadow: 0 8px 20px rgba(255, 75, 92, 0.5);
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}

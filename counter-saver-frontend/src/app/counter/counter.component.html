@@ -1,2 +1,7 @@
-<p>counter works!</p>
-<button (click)="logout()">Logout</button>
+<div class="clicks">{{ clicks }}</div>
+<button class="clicker" (click)="click()">
+  <span> Click </span>
+</button>
+
+<button class="logout-btn" (click)="logout()">Logout</button>
+<button class="refresh" (click)="refresh()">Refresh Tokens</button>
