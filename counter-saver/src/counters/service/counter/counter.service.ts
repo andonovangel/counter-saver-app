@@ -12,7 +12,7 @@ export class CounterService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async getAll(userId: number): Promise<GetCountersParams> {
+  async getAll(userId: number): Promise<Counter[]> {
     const user = await this.userRepository.findOneBy({
       id: userId,
       refresh_token: Not(IsNull()),
@@ -25,7 +25,7 @@ export class CounterService {
       );
     }
     const counters = await this.counterRepository.find();
-    return { counters };
+    return counters;
   }
 
   async get(userId: number, counterId: number): Promise<GetCounterParams> {

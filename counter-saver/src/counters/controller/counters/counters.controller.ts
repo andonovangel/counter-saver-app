@@ -12,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetCurrentUser } from 'src/common/decorators';
 import { CreateCounterDto } from 'src/counters/dtos/create-counter.dto';
 import { CounterService } from 'src/counters/service/counter/counter.service';
+import { Counter } from 'src/typeorm/entities/counter.entity';
 import { CreateCounterParams, GetCounterParams, GetCountersParams,  } from 'src/utils/type';
 
 @Controller('counters')
@@ -23,7 +24,7 @@ export class CountersController {
   @HttpCode(HttpStatus.OK)
   getCounters(
     @GetCurrentUser('sub') userId: number,
-  ): Promise<GetCountersParams> {
+  ): Promise<Counter[]> {
     return this.counterService.getAll(userId);
   }
 
