@@ -1,0 +1,9 @@
+<div class="side-bar"></div>
+
+<div class="counters-container">
+  @for (counter of countersList; track $index) {
+    <div class="counter">
+      {{ counter.clicks }} | {{ counter.createdAt | date: "mediumDate" }}
+    </div>
+  }
+</div>

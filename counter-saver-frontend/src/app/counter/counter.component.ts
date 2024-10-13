@@ -2,16 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
 import { CounterService } from './counter.service';
+import { CounterCreateBody } from './counter-create-body';
+import { CountersListSidebarComponent } from "./counters-list-sidebar/counters-list-sidebar.component";
 
 @Component({
   selector: 'app-counter',
   standalone: true,
-  imports: [],
+  imports: [CountersListSidebarComponent],
   templateUrl: './counter.component.html',
   styleUrl: './counter.component.scss',
 })
 export class CounterComponent implements OnInit {
-  clicks: number = 0;
+  public clicks: number = 0;
+  public showSaveButton: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -28,6 +31,7 @@ export class CounterComponent implements OnInit {
       next: (clicks: number) => {
         console.log(clicks);
         this.clicks = clicks;
+        this.showSaveButton = clicks ? true : false;
       },
       error: (err) => {
         console.log(err);
@@ -39,7 +43,20 @@ export class CounterComponent implements OnInit {
     this.counterService.setClick(this.clicks + 1);
   }
 
-  logout() {
+  saveCounter(): void {
+    this.counterService.saveCounter(new CounterCreateBody({clicks: this.clicks})).subscribe({
+      next: res => {
+        this.counterService.setClick(0);
+        this.showSaveButton = false;
+        console.log(res);
+      },
+      error: err => {
+        console.log(err);
+      },
+    })
+  }
+
+  logout(): void {
     this.authService.logout().subscribe({
       next: () => {
         this.authService.clearTokens();

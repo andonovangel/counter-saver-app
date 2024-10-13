@@ -1,3 +1,4 @@
+<button class="save-btn" [class.show-save-button]="showSaveButton" (click)="saveCounter()">Save</button>
 <div class="clicks">{{ clicks }}</div>
 <button class="clicker" (click)="click()">
   <span> Click </span>
@@ -5,3 +6,4 @@
 
 <button class="logout-btn" (click)="logout()">Logout</button>
 <!-- <button class="refresh" (click)="refresh()">Refresh Tokens</button> -->
+<app-counters-list-sidebar></app-counters-list-sidebar>
