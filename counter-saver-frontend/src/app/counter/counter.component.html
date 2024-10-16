@@ -1,4 +1,9 @@
-<button class="save-btn" [class.show-save-button]="showSaveButton" (click)="saveCounter()">Save</button>
+<div class="action-btns">
+    @if (showActionButtons) {
+      <button class="save-btn" (click)="saveCounter()" @myInsertRemoveTrigger>Save</button>
+      <button class="cancel-btn" (click)="cancelCounter()" @myInsertRemoveTrigger>Cancel</button>
+    }
+</div>
 <div class="clicks">{{ clicks }}</div>
 <button class="clicker" (click)="click()">
   <span> Click </span>

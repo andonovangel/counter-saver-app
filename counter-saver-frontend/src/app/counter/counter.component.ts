@@ -3,7 +3,14 @@ import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
 import { CounterService } from './counter.service';
 import { CounterCreateBody } from './counter-create-body';
-import { CountersListSidebarComponent } from "./counters-list-sidebar/counters-list-sidebar.component";
+import { CountersListSidebarComponent } from './counters-list-sidebar/counters-list-sidebar.component';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 
 @Component({
   selector: 'app-counter',
@@ -11,10 +18,19 @@ import { CountersListSidebarComponent } from "./counters-list-sidebar/counters-l
   imports: [CountersListSidebarComponent],
   templateUrl: './counter.component.html',
   styleUrl: './counter.component.scss',
+  animations: [
+    trigger('myInsertRemoveTrigger', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('350ms', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [animate('150ms', style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class CounterComponent implements OnInit {
   public clicks: number = 0;
-  public showSaveButton: boolean = false;
+  public showActionButtons: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -31,7 +47,7 @@ export class CounterComponent implements OnInit {
       next: (clicks: number) => {
         console.log(clicks);
         this.clicks = clicks;
-        this.showSaveButton = clicks ? true : false;
+        this.showActionButtons = clicks ? true : false;
       },
       error: (err) => {
         console.log(err);
@@ -44,16 +60,23 @@ export class CounterComponent implements OnInit {
   }
 
   saveCounter(): void {
-    this.counterService.saveCounter(new CounterCreateBody({clicks: this.clicks})).subscribe({
-      next: res => {
-        this.counterService.setClick(0);
-        this.showSaveButton = false;
-        console.log(res);
-      },
-      error: err => {
-        console.log(err);
-      },
-    })
+    this.counterService
+      .saveCounter(new CounterCreateBody({ clicks: this.clicks }))
+      .subscribe({
+        next: (res) => {
+          this.counterService.setClick(0);
+          this.showActionButtons = false;
+          console.log(res);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+  }
+
+  cancelCounter(): void {
+    this.counterService.setClick(0);
+    this.showActionButtons = false;
   }
 
   logout(): void {

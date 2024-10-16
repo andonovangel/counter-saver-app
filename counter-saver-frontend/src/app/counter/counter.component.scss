@@ -14,36 +14,51 @@
     rgba(28, 8, 18, 1) 95%
   );
 
-  .save-btn {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    border: none;
-    border-radius: 25px;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 12px 24px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    opacity: 0;
+  .action-btns {
+    display: flex;
+    gap: 32px;
+    height: 42px;
 
-    &.show-save-button {
-      opacity: 1;
-      transition: 35  0ms;
+    .save-btn,
+    .cancel-btn {
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 12px 24px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
     }
 
-    &:hover {
-      background: linear-gradient(135deg, #2575fc, #6a11cb);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    .save-btn {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+
+      &:hover {
+        background: linear-gradient(135deg, #2575fc, #6a11cb);
+      }
     }
 
-    &:active {
-      transform: translateY(0);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    .cancel-btn {
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+
+      &:hover {
+        background: linear-gradient(135deg, #ff4b2b, #ff416c);
+      }
     }
   }
 
