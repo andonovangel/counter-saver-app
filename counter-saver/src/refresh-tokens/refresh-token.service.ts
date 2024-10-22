@@ -11,9 +11,9 @@ export class RefreshTokenService {
     private refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
-  findOne(refreshToken: RefreshToken) {
+  findOne(token: string) {
     return this.refreshTokenRepository.findOne({
-      where: { tokenId: refreshToken.tokenId },
+      where: { token },
       relations: ['user'],
     });
   }
@@ -22,9 +22,8 @@ export class RefreshTokenService {
     this.refreshTokenRepository.save(refreshToken);
   }
 
-  create(tokenId: string, newRefreshToken: string, user: User) {
+  create(newRefreshToken: string, user: User) {
     return this.refreshTokenRepository.create({
-      tokenId,
       token: newRefreshToken,
       user: user,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -40,8 +39,8 @@ export class RefreshTokenService {
       },
     );
   }
-  
-  deleteByTokenId(tokenId: string) {
-    this.refreshTokenRepository.delete({ tokenId });
+
+  delete(token: string) {
+    this.refreshTokenRepository.delete({ token });
   }
 }

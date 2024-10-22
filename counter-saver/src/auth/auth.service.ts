@@ -24,18 +24,30 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User) {
-    const payload = {
+  createAccessToken(user: User) {
+    const accessPayload = {
       username: user.username,
       sub: user.id,
     };
+    return this.jwtService.sign(accessPayload);
+  }
 
-    const accessToken = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-    const hash = await bcrypt.hash(refreshToken, 10);
-    const tokenId = uuidv4();
+  createRefreshToken(user: User, jti: string) {
+    const refreshPayload = {
+      sub: user.id,
+      jti,
+    };
+    return this.jwtService.sign(refreshPayload, {
+      expiresIn: '7d',
+    });
+  }
 
-    const newToken = this.refreshTokenService.create(tokenId, hash, user);
+  async login(user: User) {
+    const jti = uuidv4();
+    const accessToken = this.createAccessToken(user);
+    const refreshToken = this.createRefreshToken(user, jti);
+
+    const newToken = this.refreshTokenService.create(jti, user);
     this.refreshTokenService.save(newToken);
 
     return {
@@ -47,13 +59,15 @@ export class AuthService {
 
   async logout(username: string) {
     const user: User = await this.userService.findOneWithUsername(username);
-    const refreshToken = user.refreshTokens.find(i => !i.isRevoked && i.expiresAt > new Date());
-    this.refreshTokenService.deleteByTokenId(refreshToken.tokenId);
+    const refreshToken = user.refreshTokens.find(
+      (i) => !i.isRevoked && i.expiresAt > new Date(),
+    );
+    this.refreshTokenService.delete(refreshToken.token);
   }
 
-  async refreshToken(oldRefreshToken: RefreshToken) {
+  async refreshToken(oldRefreshTokenJti: string) {
     const existingToken: RefreshToken =
-      await this.refreshTokenService.findOne(oldRefreshToken);
+      await this.refreshTokenService.findOne(oldRefreshTokenJti);
 
     if (!existingToken || existingToken.isRevoked) {
       throw new UnauthorizedException('Invalid or expired refresh token');
@@ -63,32 +77,20 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token expired');
     }
 
-    const isValid = await bcrypt.compare(oldRefreshToken.token, existingToken.token);
-    if (!isValid) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
     existingToken.isRevoked = true;
     this.refreshTokenService.save(existingToken);
 
-    const tokenId = uuidv4();
     const user: User = existingToken.user;
-    const payload = {
-      username: user.username,
-      sub: user.id,
-    };
-    const accessToken = this.jwtService.sign(payload);
-    const newRefreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const jti = uuidv4();
+    const accessToken = this.createAccessToken(user);
+    const newRefreshToken = this.createRefreshToken(user, jti);
 
-    const newToken = this.refreshTokenService.create(tokenId, newRefreshToken, user);
-    const hash = await bcrypt.hash(newToken.token, 10);
-    const refreshToken = newToken.token;
-    newToken.token = hash;
+    const newToken = this.refreshTokenService.create(jti, user);
     this.refreshTokenService.save(newToken);
 
     return {
       accessToken,
-      refreshToken,
+      newRefreshToken,
     };
   }
 }

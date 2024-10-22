@@ -7,9 +7,6 @@ export class RefreshToken {
   id: number;
 
   @Column()
-  tokenId: string;
-
-  @Column()
   token: string;
 
   @Column()

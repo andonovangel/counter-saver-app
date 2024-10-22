@@ -13,7 +13,6 @@ import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UsersService } from 'src/users/service/users/users.service';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -36,13 +35,12 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Request() req) {
-    console.log(req.user);
     return this.authService.logout(req.user.username);
   }
 
   @UseGuards(RefreshJwtAuthGuard)
   @Post('refresh')
-  async refreshToken(@Body() refreshToken) {
-    return this.authService.refreshToken(refreshToken);
+  async refreshToken(@Request() req) {
+    return this.authService.refreshToken(req.user.tokenId);
   }
 }
