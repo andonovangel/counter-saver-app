@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Counter } from './counter.entity';
+import { RefreshToken } from '../../refresh-tokens/refresh-token.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -25,9 +26,11 @@ export class User {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  @Column({ type: 'text', nullable: true })
-  refresh_token: string | null;
-
   @OneToMany(() => Counter, (counter) => counter.user)
   counters: Counter[];
+
+  @OneToMany(() => RefreshToken, (refreshTokens) => refreshTokens.user, {
+    nullable: true,
+  })
+  refreshTokens: RefreshToken[];
 }

@@ -1,108 +1,94 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from 'src/typeorm/entities/user.entity';
-import { IsNull, Not, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { AuthParams } from 'src/utils/type';
-import { Tokens } from './types';
+import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from 'src/users/service/users/users.service';
+import { RefreshTokenService } from 'src/refresh-tokens/refresh-token.service';
+import { RefreshToken } from 'src/refresh-tokens/refresh-token.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    private userService: UsersService,
     private jwtService: JwtService,
+    private refreshTokenService: RefreshTokenService,
   ) {}
 
-  hashData(data: string) {
-    return bcrypt.hash(data, 10);
+  async validateUser(username: string, password: string) {
+    const user = await this.userService.findOneWithUsername(username);
+    if (user && bcrypt.compare(password, user.password)) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
   }
 
-  async getTokens(userId: number, username: string): Promise<Tokens> {
-    const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(
-        {
-          sub: userId,
-          username,
-        },
-        {
-          secret: 'at-secret',
-          expiresIn: 30,
-        },
-      ),
-      this.jwtService.signAsync(
-        {
-          sub: userId,
-          username,
-        },
-        {
-          secret: 'rt-secret',
-          expiresIn: 60 * 60 * 24 * 7,
-        },
-      ),
-    ]);
+  async login(user: User) {
+    const payload = {
+      username: user.username,
+      sub: user.id,
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const hash = await bcrypt.hash(refreshToken, 10);
+    const tokenId = uuidv4();
+
+    const newToken = this.refreshTokenService.create(tokenId, hash, user);
+    this.refreshTokenService.save(newToken);
 
     return {
-      access_token: at,
-      refresh_token: rt,
+      ...user,
+      accessToken,
+      refreshToken,
     };
   }
 
-  async updateRtHash(userId: number, rt: string): Promise<void> {
-    const hash = await this.hashData(rt);
-    await this.userRepository.update({ id: userId }, { refresh_token: hash });
+  async logout(username: string) {
+    const user: User = await this.userService.findOneWithUsername(username);
+    const refreshToken = user.refreshTokens.find(i => !i.isRevoked && i.expiresAt > new Date());
+    this.refreshTokenService.deleteByTokenId(refreshToken.tokenId);
   }
 
-  async signup(data: AuthParams): Promise<Tokens> {
-    const hash = await this.hashData(data.password);
-    const newUser = this.userRepository.create({
-      username: data.username,
-      password: hash,
-      createdAt: new Date(),
-    });
-    await this.userRepository.save(newUser);
+  async refreshToken(oldRefreshToken: RefreshToken) {
+    const existingToken: RefreshToken =
+      await this.refreshTokenService.findOne(oldRefreshToken);
 
-    const tokens = await this.getTokens(newUser.id, newUser.username);
-    await this.updateRtHash(newUser.id, tokens.refresh_token);
-    return tokens;
-  }
-
-  async login(data: AuthParams): Promise<Tokens> {
-    const user = await this.userRepository.findOneBy({
-      username: data.username,
-    });
-    if (!user) throw new ForbiddenException('Access Denied');
-
-    const passwordMatches = await bcrypt.compare(data.password, user.password);
-    if (!passwordMatches) throw new ForbiddenException('Access Denied');
-
-    const tokens = await this.getTokens(user.id, user.username);
-    await this.updateRtHash(user.id, tokens.refresh_token);
-    return tokens;
-  }
-
-  async logout(userId: number) {
-    const user = await this.userRepository.findOneBy({
-      id: userId,
-      refresh_token: Not(IsNull()),
-    });
-
-    if (user) {
-      user.refresh_token = null;
-      await this.userRepository.save(user);
+    if (!existingToken || existingToken.isRevoked) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
     }
-  }
 
-  async refreshTokens(userId: number, refresh_token: string) {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!user || !user.refresh_token)
-      throw new ForbiddenException('Access Denied');
+    if (existingToken.expiresAt < new Date()) {
+      throw new UnauthorizedException('Refresh token expired');
+    }
 
-    const rtMatches = await bcrypt.compare(refresh_token, user.refresh_token);
-    if (!rtMatches) throw new ForbiddenException('Access Denied');
+    const isValid = await bcrypt.compare(oldRefreshToken.token, existingToken.token);
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
 
-    const tokens = await this.getTokens(user.id, user.username);
-    await this.updateRtHash(user.id, tokens.refresh_token);
-    return tokens;
+    existingToken.isRevoked = true;
+    this.refreshTokenService.save(existingToken);
+
+    const tokenId = uuidv4();
+    const user: User = existingToken.user;
+    const payload = {
+      username: user.username,
+      sub: user.id,
+    };
+    const accessToken = this.jwtService.sign(payload);
+    const newRefreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+    const newToken = this.refreshTokenService.create(tokenId, newRefreshToken, user);
+    const hash = await bcrypt.hash(newToken.token, 10);
+    const refreshToken = newToken.token;
+    newToken.token = hash;
+    this.refreshTokenService.save(newToken);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

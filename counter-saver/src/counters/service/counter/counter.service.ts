@@ -2,7 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Counter } from 'src/typeorm/entities/counter.entity';
 import { User } from 'src/typeorm/entities/user.entity';
-import { CreateCounterParams, GetCounterParams, GetCountersParams } from 'src/utils/type';
+import {
+  CreateCounterParams,
+  GetCounterParams,
+  GetCountersParams,
+} from 'src/utils/type';
 import { IsNull, Not, Repository } from 'typeorm';
 
 @Injectable()
@@ -15,7 +19,7 @@ export class CounterService {
   async getAll(userId: number): Promise<Counter[]> {
     const user = await this.userRepository.findOneBy({
       id: userId,
-      refresh_token: Not(IsNull()),
+      refreshTokens: Not(IsNull()),
     });
 
     if (!user) {
@@ -31,7 +35,7 @@ export class CounterService {
   async get(userId: number, counterId: number): Promise<GetCounterParams> {
     const user = await this.userRepository.findOneBy({
       id: userId,
-      refresh_token: Not(IsNull()),
+      refreshTokens: Not(IsNull()),
     });
 
     if (!user) {
@@ -44,10 +48,13 @@ export class CounterService {
     return this.counterRepository.findOneBy({ id: counterId });
   }
 
-  async create(userId: number, data: CreateCounterParams): Promise<CreateCounterParams> {
+  async create(
+    userId: number,
+    data: CreateCounterParams,
+  ): Promise<CreateCounterParams> {
     const user = await this.userRepository.findOneBy({
       id: userId,
-      refresh_token: Not(IsNull()),
+      refreshTokens: Not(IsNull()),
     });
 
     if (!user) {

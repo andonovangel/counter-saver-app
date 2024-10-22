@@ -4,48 +4,45 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
-import { AuthPayloadDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
-import { Tokens } from './types';
-import { AuthGuard } from '@nestjs/passport';
-import { GetCurrentUser, Public } from 'src/common/decorators';
-import { RefreshTokenGuard } from 'src/common/guards';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
+import { UsersService } from 'src/users/service/users/users.service';
+import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private userService: UsersService) {}
 
-  @Public()
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  signup(@Body() data: AuthPayloadDto): Promise<Tokens> {
-    return this.authService.signup(data);
+  async signup(@Body() createUserDto: CreateUserDto) {
+    return await this.userService.create(createUserDto);
   }
 
-  @Public()
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Body() data: AuthPayloadDto): Promise<Tokens> {
-    return this.authService.login(data);
+  async login(@Request() req) {
+    return this.authService.login(req.user);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  logout(@GetCurrentUser('sub') userId: number): Promise<void> {
-    return this.authService.logout(userId);
+  logout(@Request() req) {
+    console.log(req.user);
+    return this.authService.logout(req.user.username);
   }
 
-  @Public()
-  @UseGuards(RefreshTokenGuard)
+  @UseGuards(RefreshJwtAuthGuard)
   @Post('refresh')
-  @HttpCode(HttpStatus.OK)
-  refreshTokens(
-    @GetCurrentUser('sub') userId: number,
-    @GetCurrentUser('refreshToken') refresh_token?: string,
-  ): Promise<Tokens> {
-    return this.authService.refreshTokens(userId, refresh_token);
+  async refreshToken(@Body() refreshToken) {
+    return this.authService.refreshToken(refreshToken);
   }
 }

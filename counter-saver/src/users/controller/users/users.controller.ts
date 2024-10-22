@@ -7,8 +7,9 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
-import { CreateUserCounterDto } from 'src/users/dtos/create-user-counter.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { UsersService } from 'src/users/service/users/users.service';
@@ -17,15 +18,16 @@ import { UsersService } from 'src/users/service/users/users.service';
 export class UsersController {
   constructor(private userService: UsersService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getUsers() {
-    const users = await this.userService.findUsers();
+    const users = await this.userService.findAll();
     return users;
   }
 
   @Post()
   createUser(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto);
+    return this.userService.create(createUserDto);
   }
 
   @Put(':id')
@@ -39,13 +41,5 @@ export class UsersController {
   @Delete(':id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     await this.userService.deleteUser(id);
-  }
-
-  @Post(':id/counters')
-  createUserCounter(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() createUserCounterDto: CreateUserCounterDto,
-  ) {
-    return this.userService.createUserCounter(id, createUserCounterDto);
   }
 }

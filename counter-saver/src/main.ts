@@ -10,7 +10,6 @@ async function bootstrap() {
     credentials: true,
     allowedHeaders: 'Authorization, Content-Type',
   });
-  app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
 }
 bootstrap();

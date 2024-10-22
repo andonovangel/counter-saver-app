@@ -2,12 +2,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Counter } from 'src/typeorm/entities/counter.entity';
 import { User } from 'src/typeorm/entities/user.entity';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import {
   CreateCounterParams,
   CreateUserParams,
   UpdateUserParams,
 } from 'src/utils/type';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -16,17 +18,24 @@ export class UsersService {
     @InjectRepository(Counter) private counterRepository: Repository<Counter>,
   ) {}
 
-  findUsers() {
-    return this.userRepository.find({ relations: ['counters'] });
+  findAll() {
+    return this.userRepository.find();
   }
 
-  createUser(userDetails: CreateUserParams) {
-    const newUser = this.userRepository.create({
-      ...userDetails,
-      createdAt: new Date(),
-    });
+  findOne(id: number) {
+    return this.userRepository.findOne({ where: { id }, relations: ['refreshTokens'] });
+  }
 
-    return this.userRepository.save(newUser);
+  findOneWithUsername(username: string) {
+    return this.userRepository.findOne({ where: { username }, relations: ['refreshTokens'] });
+  }
+
+  async create(createUserDto: CreateUserDto) {
+    const hash = await bcrypt.hash(createUserDto.password, 10);
+    const user = this.userRepository.create({ username: createUserDto.username, password: hash });
+    await this.userRepository.save(user);
+    const { password, ...result } = user;
+    return result;
   }
 
   updateUser(id: number, userDetails: UpdateUserParams) {
@@ -37,10 +46,7 @@ export class UsersService {
     return this.userRepository.delete({ id });
   }
 
-  async createUserCounter(
-    id: number,
-    userCounterDetails: CreateCounterParams,
-  ) {
+  async createUserCounter(id: number, userCounterDetails: CreateCounterParams) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new HttpException(
