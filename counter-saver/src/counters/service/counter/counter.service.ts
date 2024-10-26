@@ -5,7 +5,6 @@ import { User } from 'src/typeorm/entities/user.entity';
 import {
   CreateCounterParams,
   GetCounterParams,
-  GetCountersParams,
 } from 'src/utils/type';
 import { IsNull, Not, Repository } from 'typeorm';
 
@@ -19,7 +18,7 @@ export class CounterService {
   async getAll(userId: number): Promise<Counter[]> {
     const user = await this.userRepository.findOneBy({
       id: userId,
-      refreshTokens: Not(IsNull()),
+      refreshToken: Not(IsNull()),
     });
 
     if (!user) {
@@ -35,7 +34,7 @@ export class CounterService {
   async get(userId: number, counterId: number): Promise<GetCounterParams> {
     const user = await this.userRepository.findOneBy({
       id: userId,
-      refreshTokens: Not(IsNull()),
+      refreshToken: Not(IsNull()),
     });
 
     if (!user) {
@@ -54,7 +53,7 @@ export class CounterService {
   ): Promise<CreateCounterParams> {
     const user = await this.userRepository.findOneBy({
       id: userId,
-      refreshTokens: Not(IsNull()),
+      refreshToken: Not(IsNull()),
     });
 
     if (!user) {

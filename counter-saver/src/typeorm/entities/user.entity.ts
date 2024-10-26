@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -29,8 +30,8 @@ export class User {
   @OneToMany(() => Counter, (counter) => counter.user)
   counters: Counter[];
 
-  @OneToMany(() => RefreshToken, (refreshTokens) => refreshTokens.user, {
+  @OneToOne(() => RefreshToken, (refreshToken) => refreshToken.user, {
     nullable: true,
   })
-  refreshTokens: RefreshToken[];
+  refreshToken: RefreshToken;
 }

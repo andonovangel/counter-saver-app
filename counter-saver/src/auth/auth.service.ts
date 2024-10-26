@@ -43,6 +43,10 @@ export class AuthService {
   }
 
   async login(user: User) {
+    const existingToken = await this.refreshTokenService.findOneByUserId(user.id);
+    if (existingToken) {
+      this.refreshTokenService.delete(existingToken.token);
+    }
     const jti = uuidv4();
     const accessToken = this.createAccessToken(user);
     const refreshToken = this.createRefreshToken(user, jti);
@@ -57,19 +61,17 @@ export class AuthService {
     };
   }
 
-  async logout(username: string) {
-    const user: User = await this.userService.findOneWithUsername(username);
-    const refreshToken = user.refreshTokens.find(
-      (i) => !i.isRevoked && i.expiresAt > new Date(),
-    );
+  async logout(userId: number) {
+    const user: User = await this.userService.findOne(userId);
+    const refreshToken = user.refreshToken;
     this.refreshTokenService.delete(refreshToken.token);
   }
 
-  async refreshToken(oldRefreshTokenJti: string) {
+  async refreshToken(userId: number) {
     const existingToken: RefreshToken =
-      await this.refreshTokenService.findOne(oldRefreshTokenJti);
+      await this.refreshTokenService.findOneByUserId(userId);
 
-    if (!existingToken || existingToken.isRevoked) {
+    if (!existingToken) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
@@ -77,8 +79,7 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token expired');
     }
 
-    existingToken.isRevoked = true;
-    this.refreshTokenService.save(existingToken);
+    this.refreshTokenService.delete(existingToken.token);
 
     const user: User = existingToken.user;
     const jti = uuidv4();
@@ -90,7 +91,7 @@ export class AuthService {
 
     return {
       accessToken,
-      newRefreshToken,
+      refreshToken: newRefreshToken,
     };
   }
 }

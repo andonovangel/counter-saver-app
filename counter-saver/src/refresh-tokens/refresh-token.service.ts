@@ -11,6 +11,13 @@ export class RefreshTokenService {
     private refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
+  findOneByUserId(userId: number) {
+    return this.refreshTokenRepository.findOne({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
+  }
+
   findOne(token: string) {
     return this.refreshTokenRepository.findOne({
       where: { token },

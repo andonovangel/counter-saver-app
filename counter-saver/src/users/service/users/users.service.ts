@@ -5,7 +5,6 @@ import { User } from 'src/typeorm/entities/user.entity';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import {
   CreateCounterParams,
-  CreateUserParams,
   UpdateUserParams,
 } from 'src/utils/type';
 import { Repository } from 'typeorm';
@@ -23,11 +22,11 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return this.userRepository.findOne({ where: { id }, relations: ['refreshTokens'] });
+    return this.userRepository.findOne({ where: { id }, relations: ['refreshToken'] });
   }
 
   findOneWithUsername(username: string) {
-    return this.userRepository.findOne({ where: { username }, relations: ['refreshTokens'] });
+    return this.userRepository.findOne({ where: { username }, relations: ['refreshToken'] });
   }
 
   async create(createUserDto: CreateUserDto) {

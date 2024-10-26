@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity , JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../typeorm/entities/user.entity';
 
 @Entity({ name: 'refresh_tokens' })
@@ -12,9 +12,7 @@ export class RefreshToken {
   @Column()
   expiresAt: Date;
 
-  @Column({ default: false })
-  isRevoked: boolean;
-
-  @ManyToOne(() => User, (user) => user.refreshTokens)
+  @OneToOne(() => User, (user) => user.refreshToken)
+  @JoinColumn()
   user: User;
 }
