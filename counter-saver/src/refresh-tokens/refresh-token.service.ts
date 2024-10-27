@@ -11,7 +11,7 @@ export class RefreshTokenService {
     private refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
-  findOneByUserId(userId: number) {
+  findOneByUserId(userId: string) {
     return this.refreshTokenRepository.findOne({
       where: { user: { id: userId } },
       relations: ['user'],

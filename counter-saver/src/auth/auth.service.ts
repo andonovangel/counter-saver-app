@@ -61,13 +61,13 @@ export class AuthService {
     };
   }
 
-  async logout(userId: number) {
+  async logout(userId: string) {
     const user: User = await this.userService.findOne(userId);
     const refreshToken = user.refreshToken;
     this.refreshTokenService.delete(refreshToken.token);
   }
 
-  async refreshToken(userId: number) {
+  async refreshToken(userId: string) {
     const existingToken: RefreshToken =
       await this.refreshTokenService.findOneByUserId(userId);
 

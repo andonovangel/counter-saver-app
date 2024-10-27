@@ -3,8 +3,8 @@ import { User } from '../typeorm/entities/user.entity';
 
 @Entity({ name: 'refresh_tokens' })
 export class RefreshToken {
-  @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   token: string;

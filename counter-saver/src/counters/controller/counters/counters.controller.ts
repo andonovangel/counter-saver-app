@@ -35,7 +35,7 @@ export class CountersController {
   @HttpCode(HttpStatus.OK)
   getCounter(
     @Request() req,
-    @Param('id') counterId: number,
+    @Param('id') counterId: string,
   ): Promise<GetCounterParams> {
     return this.counterService.findOne(req.user.userId, counterId);
   }

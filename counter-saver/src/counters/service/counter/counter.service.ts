@@ -17,7 +17,7 @@ export class CounterService {
     return counters;
   }
 
-  async findOne(userId: number, counterId: number): Promise<GetCounterParams> {
+  async findOne(userId: number, counterId: string): Promise<GetCounterParams> {
     return this.counterRepository.findOne({
       where: {
         id: counterId,

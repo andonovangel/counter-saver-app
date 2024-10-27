@@ -21,7 +21,7 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.userRepository.findOne({ where: { id }, relations: ['refreshToken'] });
   }
 
@@ -37,15 +37,15 @@ export class UsersService {
     return result;
   }
 
-  updateUser(id: number, userDetails: UpdateUserParams) {
+  updateUser(id: string, userDetails: UpdateUserParams) {
     return this.userRepository.update({ id }, { ...userDetails });
   }
 
-  deleteUser(id: number) {
+  deleteUser(id: string) {
     return this.userRepository.delete({ id });
   }
 
-  async createUserCounter(id: number, userCounterDetails: CreateCounterParams) {
+  async createUserCounter(id: string, userCounterDetails: CreateCounterParams) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new HttpException(

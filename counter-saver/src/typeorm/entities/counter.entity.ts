@@ -9,8 +9,8 @@ import { User } from './user.entity';
 
 @Entity({ name: 'counters' })
 export class Counter {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   clicks: number;

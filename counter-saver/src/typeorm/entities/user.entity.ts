@@ -12,8 +12,8 @@ import { RefreshToken } from '../../refresh-tokens/refresh-token.entity';
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ unique: true })
   username: string;
