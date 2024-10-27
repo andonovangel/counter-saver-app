@@ -50,8 +50,7 @@ export class AuthService {
   }
 
   public refreshTokens(): Observable<ITokens> {
-    const refresh_token = this.getRefreshToken();
-    const headers = new HttpHeaders({'Authorization': `Bearer ${refresh_token}`});
-    return this.http.post<ITokens>(`${this.apiUrl}/refresh`, {}, { headers });
+    const token = this.getRefreshToken();
+    return this.http.post<ITokens>(`${this.apiUrl}/refresh`, { token });
   }
 }

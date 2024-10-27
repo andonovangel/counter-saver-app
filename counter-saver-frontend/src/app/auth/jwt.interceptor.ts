@@ -17,12 +17,13 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     req = addToken(req, accessToken);
   }
 
-  return next(req).pipe(
+  return next(req)
+  .pipe(
     catchError((error) => {
       if (error.status === 401 && accessToken) {
         return auth.refreshTokens().pipe(
-          switchMap((newTokens: ITokens) => {
-            auth.setTokens(newTokens.access_token, newTokens.refresh_token);
+          switchMap((newTokens: any) => {
+            auth.setTokens(newTokens.accessToken, newTokens.refreshToken);
             const newAccessToken = auth.getAccessToken();
             if (newAccessToken) {
               req = addToken(req, newAccessToken);
