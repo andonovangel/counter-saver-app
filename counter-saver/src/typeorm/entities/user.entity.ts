@@ -32,6 +32,7 @@ export class User {
 
   @OneToOne(() => RefreshToken, (refreshToken) => refreshToken.user, {
     nullable: true,
+    cascade: true,
   })
   refreshToken: RefreshToken;
 }

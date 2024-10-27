@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Req,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -25,28 +25,28 @@ export class CountersController {
   @Get()
   @HttpCode(HttpStatus.OK)
   getCounters(
-    @GetCurrentUser('sub') userId: number,
+    @Request() req,
   ): Promise<Counter[]> {
-    return this.counterService.getAll(userId);
+    return this.counterService.find(req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   getCounter(
-    @GetCurrentUser('sub') userId: number,
+    @Request() req,
     @Param('id') counterId: number,
   ): Promise<GetCounterParams> {
-    return this.counterService.get(userId, counterId);
+    return this.counterService.findOne(req.user.userId, counterId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   createCounter(
-    @GetCurrentUser('sub') userId: number,
+    @Request() req,
     @Body() createCounterDto: CreateCounterDto,
   ): Promise<CreateCounterParams> {
-    return this.counterService.create(userId, createCounterDto);
+    return this.counterService.create(req.user.userId, createCounterDto);
   }
 }

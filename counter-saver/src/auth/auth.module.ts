@@ -16,7 +16,7 @@ import { RefreshTokenService } from 'src/refresh-tokens/refresh-token.service';
   imports: [
     JwtModule.register({
       secret: `${process.env.jwt_secret}`,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '15min' },
     }),
     TypeOrmModule.forFeature([User, Counter, RefreshToken]),
   ],
