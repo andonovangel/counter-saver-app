@@ -22,7 +22,7 @@ export class CountersListSidebarComponent implements OnInit {
 
   fetchCounters(): void {
     this.counterService.getCounters().subscribe({
-      next: list => {
+      next: (list: ICounter[]) => {
         console.log(list);
         this.countersList = list;
       },
@@ -31,7 +31,7 @@ export class CountersListSidebarComponent implements OnInit {
 
   subscribeToCountersList(): void {
     this.counterService.countersList$.subscribe({
-      next: list => {
+      next: (list: ICounter[]) => {
         console.log(list);
         this.countersList = list;
       }

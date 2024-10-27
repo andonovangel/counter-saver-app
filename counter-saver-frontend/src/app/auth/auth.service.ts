@@ -13,22 +13,22 @@ export class AuthService {
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 
-  public setTokens(access_token: string, refresh_token: string): void {
-    this.cookieService.set('access_token', access_token, {});
-    this.cookieService.set('refresh_token', refresh_token, {});
+  public setTokens(accessToken: string, refreshToken: string): void {
+    this.cookieService.set('accessToken', accessToken, {});
+    this.cookieService.set('refreshToken', refreshToken, {});
   }
 
   public getAccessToken(): string | null {
-    return this.cookieService.get('access_token');
+    return this.cookieService.get('accessToken');
   }
 
   public getRefreshToken(): string | null {
-    return this.cookieService.get('refresh_token');
+    return this.cookieService.get('refreshToken');
   }
 
   public clearTokens(): void {
-    this.cookieService.delete('access_token');
-    this.cookieService.delete('refresh_token');
+    this.cookieService.delete('accessToken');
+    this.cookieService.delete('refreshToken');
   }
 
   public isLoggedIn(): boolean {

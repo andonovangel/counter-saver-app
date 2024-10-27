@@ -1,4 +1,7 @@
 export interface IUser {
-  access_token: string;
-  refresh_token: string;
+  username: string;
+  createdAt: Date;
+  updatedAt: Date;
+  accessToken: string;
+  refreshToken: string;
 }

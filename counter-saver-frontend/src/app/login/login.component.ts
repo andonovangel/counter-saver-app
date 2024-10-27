@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     if (this.formGroup.valid) {
       this.authService.login(this.formGroup.value).subscribe({
-        next: (user: any) => {
+        next: (user: IUser) => {
           this.authService.setTokens(user.accessToken, user.refreshToken);
           this.router.navigate(['counter']);
         },

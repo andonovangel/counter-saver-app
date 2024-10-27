@@ -22,7 +22,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error) => {
       if (error.status === 401 && accessToken) {
         return auth.refreshTokens().pipe(
-          switchMap((newTokens: any) => {
+          switchMap((newTokens: ITokens) => {
             auth.setTokens(newTokens.accessToken, newTokens.refreshToken);
             const newAccessToken = auth.getAccessToken();
             if (newAccessToken) {

@@ -90,17 +90,4 @@ export class CounterComponent implements OnInit {
       },
     });
   }
-
-  // refresh() {
-  //   console.log('refresh_token', this.authService.getRefreshToken());
-  //   console.log('access_token', this.authService.getAccessToken());
-  //   this.authService.refreshTokens().subscribe({
-  //     next: (res) => {
-  //       console.log(res);
-  //     },
-  //     error: (err) => {
-  //       console.log(err);
-  //     },
-  //   });
-  // }
 }
