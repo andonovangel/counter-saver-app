@@ -32,6 +32,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
             return next(req);
           }),
           catchError((refreshError) => {
+            auth.clearTokens();
             return throwError(() => refreshError);
           })
         );
