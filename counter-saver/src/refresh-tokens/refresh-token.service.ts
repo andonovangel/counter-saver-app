@@ -11,25 +11,25 @@ export class RefreshTokenService {
     private refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
-  findOneByUserId(userId: string) {
+  findOneByUserId(userId: string): Promise<RefreshToken> {
     return this.refreshTokenRepository.findOne({
       where: { user: { id: userId } },
       relations: ['user'],
     });
   }
 
-  findOne(token: string) {
+  findOne(token: string): Promise<RefreshToken> {
     return this.refreshTokenRepository.findOne({
       where: { token },
       relations: ['user'],
     });
   }
 
-  save(refreshToken: RefreshToken) {
+  save(refreshToken: RefreshToken): void {
     this.refreshTokenRepository.save(refreshToken);
   }
 
-  create(newRefreshToken: string, user: User) {
+  create(newRefreshToken: string, user: User): RefreshToken {
     return this.refreshTokenRepository.create({
       token: newRefreshToken,
       user: user,
@@ -37,17 +37,7 @@ export class RefreshTokenService {
     });
   }
 
-  update(newRefreshToken: string, user: User) {
-    return this.refreshTokenRepository.update(
-      { user },
-      {
-        token: newRefreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      },
-    );
-  }
-
-  delete(token: string) {
+  delete(token: string): void {
     this.refreshTokenRepository.delete({ token });
   }
 }

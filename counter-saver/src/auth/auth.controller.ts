@@ -13,34 +13,49 @@ import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UsersService } from 'src/users/service/users/users.service';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import {
+  LoginParams,
+  RefreshTokenParams,
+  SignupParams,
+} from 'src/utils/type';
+import { User } from 'src/typeorm/entities/user.entity';
+
+interface AuthenticatedRequest extends Request {
+  user: User;
+}
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService, private userService: UsersService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService,
+  ) {}
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  async signup(@Body() createUserDto: CreateUserDto) {
+  async signup(@Body() createUserDto: CreateUserDto): Promise<SignupParams> {
     return await this.userService.create(createUserDto);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Request() req) {
+  async login(@Request() req: AuthenticatedRequest): Promise<LoginParams> {
     return this.authService.login(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  logout(@Request() req) {
-    return this.authService.logout(req.user.userId);
+  logout(@Request() req: AuthenticatedRequest): void {
+    this.authService.logout(req.user.id);
   }
 
   @UseGuards(RefreshJwtAuthGuard)
   @Post('refresh')
-  async refreshToken(@Request() req) {
-    return this.authService.refreshToken(req.user.userId);
+  async refreshToken(
+    @Request() req: AuthenticatedRequest,
+  ): Promise<RefreshTokenParams> {
+    return this.authService.refreshToken(req.user.id);
   }
 }

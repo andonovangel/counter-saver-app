@@ -9,29 +9,28 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
 import { CreateCounterDto } from 'src/counters/dtos/create-counter.dto';
 import { CounterService } from 'src/counters/service/counter/counter.service';
 import { Counter } from 'src/typeorm/entities/counter.entity';
-import { CreateCounterParams, GetCounterParams, GetCountersParams,  } from 'src/utils/type';
+import {
+  CreateCounterParams,
+  GetCounterParams,
+} from 'src/utils/type';
 
 @Controller('counters')
 export class CountersController {
   constructor(private counterService: CounterService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  getCounters(
-    @Request() req,
-  ): Promise<Counter[]> {
+  getCounters(@Request() req): Promise<Counter[]> {
     return this.counterService.find(req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   getCounter(
     @Request() req,
@@ -40,8 +39,8 @@ export class CountersController {
     return this.counterService.findOne(req.user.userId, counterId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   createCounter(
     @Request() req,
