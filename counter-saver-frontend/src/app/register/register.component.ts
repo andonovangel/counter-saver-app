@@ -56,8 +56,7 @@ export class RegisterComponent implements OnInit {
       this.authService.signup(this.formGroup.value).subscribe({
         next: (user: IUser) => {
           console.log(user);
-          this.authService.setTokens(user.accessToken, user.refreshToken);
-          this.router.navigate(['counter']);
+          this.router.navigate(['login']);
         },
         error: (err) => {
           console.log(err);

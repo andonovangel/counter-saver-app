@@ -1,22 +1,33 @@
-<div class="wrapper">
-  <mat-form-field [formGroup]="formGroup">
-    <mat-label>{{ usernameFormControlLabel }}</mat-label>
-    <input matInput [formControlName]="usernameFormControlName" />
-  </mat-form-field>
+<div class="form-wrapper">
+  <div class="form-container">
+    <h2>Register</h2>
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill" class="custom-form-field">
+        <mat-label>{{ usernameFormControlLabel }}</mat-label>
+        <input matInput [formControlName]="usernameFormControlName" />
+      </mat-form-field>
 
-  <mat-form-field [formGroup]="formGroup">
-    <mat-label>{{ passwordFormControlLabel }}</mat-label>
-    <input matInput [formControlName]="passwordFormControlName" [type]="hide() ? 'password' : 'text'" />
-    <button
-      mat-icon-button
-      matSuffix
-      (click)="clickEvent($event)"
-      [attr.aria-label]="'Hide password'"
-      [attr.aria-pressed]="hide()"
-    >
-      <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
-    </button>
-  </mat-form-field>
+      <mat-form-field appearance="fill" class="custom-form-field">
+        <mat-label>{{ passwordFormControlLabel }}</mat-label>
+        <input
+          matInput
+          [formControlName]="passwordFormControlName"
+          [type]="hide() ? 'password' : 'text'"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="clickEvent($event)"
+          aria-label="Hide password"
+          [attr.aria-pressed]="hide()"
+        >
+          <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
+      </mat-form-field>
 
-  <button (click)="onSubmit()">Submit</button>
+      <button mat-raised-button color="accent" class="submit-button">
+        Submit
+      </button>
+    </form>
+  </div>
 </div>

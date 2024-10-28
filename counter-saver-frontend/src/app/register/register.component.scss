@@ -1,13 +1,66 @@
-:host {
-  height: 100%;
+$form-background: #1e1e2f;
+$form-field-background: #2a2a3b;
+$accent-color: #ff4081;
+$text-color: #e0e0e0;
+
+.form-wrapper {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
+  background-color: $form-background;
+}
 
-  .wrapper {
-    width: 300px;
-    display: flex;
-    flex-direction: column;
+.form-container {
+  background-color: #2e2e3e;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  color: $text-color;
+
+  h2 {
+    margin-bottom: 1.5rem;
+    color: $accent-color;
+  }
+
+  .custom-form-field {
+    width: 100%;
+    margin-bottom: 1.25rem;
+  }
+
+    ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+      background-color: $form-field-background;
+      border-radius: 6px;
+    }
+
+    mat-label {
+      color: #bdbdbd;
+      font-weight: 500;
+    }
+
+    input {
+      color: $text-color;
+    }
+
+    mat-icon {
+      color: $accent-color;
+    }
+
+  .submit-button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    background-color: $accent-color;
+    color: #fff;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: darken($accent-color, 10%);
+    }
   }
 }
